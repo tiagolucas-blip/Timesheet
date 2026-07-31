@@ -21,7 +21,7 @@
   "scripts": {
     "start": "cds-serve",
     "build:ui5": "cd app/timesheet && ui5 build --all --dest ../../dist-ui5",
-    "deploy:vercel-db": "cds deploy --profile vercel"
+    "deploy:vercel-db": "node scripts/deploy-vercel-db.js"
   },
   "private": true,
   "cds": {

@@ -7,31 +7,15 @@
 // so we don't bundle the framework into the function. Our own app files
 // (app/timesheet/webapp/**) ARE served from here via CAP's default static
 // middleware, which is why vercel.json also marks them as included files.
-const { URL } = require('url');
-
 process.env.CDS_ENV = process.env.CDS_ENV || 'vercel';
 
 const cds = require('@sap/cds');
-
-function credentialsFromConnectionString(connectionString) {
-  const u = new URL(connectionString);
-  return {
-    host: u.hostname,
-    port: u.port ? Number(u.port) : 5432,
-    user: decodeURIComponent(u.username),
-    password: decodeURIComponent(u.password),
-    database: u.pathname.replace(/^\//, ''),
-    ssl: { rejectUnauthorized: false },
-  };
-}
+const { configureDbCredentials } = require('../lib/db-credentials');
 
 let appPromise;
 function bootstrap() {
   if (!appPromise) {
-    const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
-    if (connectionString) {
-      cds.env.requires.db.credentials = credentialsFromConnectionString(connectionString);
-    }
+    configureDbCredentials(cds);
     // port: 0 avoids binding a well-known port — we never use the listener,
     // requests are dispatched directly via app(req, res) below.
     appPromise = require('@sap/cds/server')({ port: 0 }).then(() => cds.app);
