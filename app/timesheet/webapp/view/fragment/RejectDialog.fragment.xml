@@ -1,0 +1,14 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog id="rejectDialog" title="{i18n>rejectReasonTitle}" contentWidth="24rem">
+    <content>
+      <VBox class="sapUiSmallMargin">
+        <Label text="{i18n>rejectReasonLabel}" labelFor="rejectReasonInput" />
+        <TextArea id="rejectReasonInput" rows="3" width="100%" />
+      </VBox>
+    </content>
+    <buttons>
+      <Button text="{i18n>reject}" type="Reject" press=".onConfirmReject" />
+      <Button text="{i18n>cancel}" press=".onCancelReject" />
+    </buttons>
+  </Dialog>
+</core:FragmentDefinition>

@@ -5,10 +5,17 @@
     "@sap/cds": "^10"
   },
   "devDependencies": {
-    "@cap-js/sqlite": "^3"
+    "@cap-js/sqlite": "^3",
+    "@openui5/sap.f": "1.120",
+    "@openui5/sap.m": "1.120",
+    "@openui5/sap.ui.core": "1.120",
+    "@openui5/sap.ui.layout": "1.120",
+    "@openui5/themelib_sap_horizon": "1.120",
+    "@ui5/cli": "^4.0.60"
   },
   "scripts": {
-    "start": "cds-serve"
+    "start": "cds-serve",
+    "build:ui5": "cd app/timesheet && ui5 build --all --dest ../../dist-ui5"
   },
   "private": true
 }

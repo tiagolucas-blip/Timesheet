@@ -1,0 +1,97 @@
+<mvc:View
+  controllerName="timesheet.app.controller.MyTimesheet"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:core="sap.ui.core"
+  xmlns="sap.m"
+>
+  <VBox class="sapUiResponsiveContentPadding">
+      <Toolbar>
+        <Title text="{i18n>tabMyTimesheet}" level="H2" />
+        <ToolbarSpacer />
+        <Button text="{i18n>newWeek}" type="Emphasized" press="onNewWeek" />
+      </Toolbar>
+
+      <Table
+        id="headersTable"
+        items="{ path: '/TimesheetHeaders', sorter: { path: 'weekStartDate', descending: true } }"
+        growing="true"
+        growingThreshold="20"
+        noDataText="No timesheet weeks yet"
+        mode="SingleSelectMaster"
+        selectionChange="onHeaderSelect"
+      >
+        <columns>
+          <Column><Text text="{i18n>colWeek}" /></Column>
+          <Column><Text text="{i18n>colStatus}" /></Column>
+          <Column hAlign="End"><Text text="{i18n>colTotalHours}" /></Column>
+          <Column />
+        </columns>
+        <items>
+          <ColumnListItem type="Active">
+            <cells>
+              <Text text="{weekStartDate}" />
+              <ObjectStatus text="{status}" state="{path: 'status', formatter: '.formatStatusState'}" />
+              <Text text="{totalHours}" />
+              <Button
+                text="{i18n>submitWeek}"
+                type="Transparent"
+                enabled="{path: 'status', formatter: '.isDraft', targetType: 'any'}"
+                press="onSubmitWeek"
+              />
+            </cells>
+          </ColumnListItem>
+        </items>
+      </Table>
+
+      <Panel headerText="{i18n>colDate}" visible="{view>/hasSelection}" class="sapUiResponsiveMargin">
+        <headerToolbar>
+          <Toolbar>
+            <Title text="Entries" level="H3" />
+            <ToolbarSpacer />
+            <Button
+              text="{i18n>addEntry}"
+              press="onAddEntry"
+              enabled="{path: 'view>/selectedHeaderStatus', formatter: '.isDraft', targetType: 'any'}"
+            />
+          </Toolbar>
+        </headerToolbar>
+        <Table
+          id="entriesTable"
+          noDataText="No entries in this week yet"
+          items="{
+            path: '/TimesheetEntries',
+            parameters: { $expand: 'costCenter,project' },
+            sorter: { path: 'date' }
+          }"
+        >
+          <columns>
+            <Column><Text text="{i18n>colDate}" /></Column>
+            <Column><Text text="{i18n>colCostCenterOrProject}" /></Column>
+            <Column><Text text="{i18n>colActivity}" /></Column>
+            <Column hAlign="End"><Text text="{i18n>colHours}" /></Column>
+            <Column><Text text="{i18n>colStatus}" /></Column>
+            <Column><Text text="{i18n>colRejectionReason}" /></Column>
+            <Column />
+          </columns>
+          <items>
+            <ColumnListItem>
+              <cells>
+                <Text text="{date}" />
+                <Text text="{parts: [{path: 'costCenter/name'}, {path: 'project/name'}], formatter: '.formatCostCenterOrProject'}" />
+                <Text text="{activityType}" />
+                <Text text="{hours}" />
+                <ObjectStatus text="{status}" state="{path: 'status', formatter: '.formatStatusState'}" />
+                <Text text="{rejectionReason}" />
+                <Button
+                  icon="sap-icon://delete"
+                  type="Transparent"
+                  visible="{path: 'status', formatter: '.isDraft', targetType: 'any'}"
+                  press="onDeleteEntry"
+                />
+              </cells>
+            </ColumnListItem>
+          </items>
+        </Table>
+      </Panel>
+  </VBox>
+</mvc:View>

@@ -27,6 +27,11 @@ module.exports = class TimesheetService extends cds.ApplicationService {
       await UPDATE(TimesheetHeaders).set({ status }).where({ ID: headerID });
     };
 
+    // --- assign IDs for client-created rows (StringKey has no auto-generation) --
+    this.before('CREATE', [TimesheetHeaders, TimesheetEntries], (req) => {
+      req.data.ID = req.data.ID || cds.utils.uuid();
+    });
+
     // --- validation on employee-entered lines -----------------------------
     this.before(['CREATE', 'UPDATE'], TimesheetEntries, (req) => {
       const { costCenter_ID, project_ID } = req.data;
@@ -84,7 +89,7 @@ module.exports = class TimesheetService extends cds.ApplicationService {
       return SELECT.one.from(TimesheetEntries).where({ ID: entryID });
     });
 
-    this.on('reject', TimesheetEntries, async (req) => {
+    this.on('rejectEntry', TimesheetEntries, async (req) => {
       const entryID = keyOf(req.params[0]);
       const { reason } = req.data;
       if (!reason || !reason.trim()) return req.error(400, 'A rejection reason is required');

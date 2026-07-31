@@ -1,0 +1,46 @@
+<mvc:View
+  controllerName="timesheet.app.controller.Approvals"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:core="sap.ui.core"
+  xmlns="sap.m"
+>
+  <VBox class="sapUiResponsiveContentPadding">
+      <Toolbar>
+        <Title text="{i18n>tabApprovals}" level="H2" />
+      </Toolbar>
+
+      <Table
+        id="approvalsTable"
+        noDataText="No entries pending approval"
+        items="{
+          path: '/TimesheetEntries',
+          parameters: { $expand: 'employee,costCenter,project' },
+          sorter: { path: 'date' }
+        }"
+      >
+        <columns>
+          <Column><Text text="{i18n>colEmployee}" /></Column>
+          <Column><Text text="{i18n>colDate}" /></Column>
+          <Column><Text text="{i18n>colCostCenterOrProject}" /></Column>
+          <Column><Text text="{i18n>colActivity}" /></Column>
+          <Column hAlign="End"><Text text="{i18n>colHours}" /></Column>
+          <Column />
+        </columns>
+        <items>
+          <ColumnListItem>
+            <cells>
+              <Text text="{parts: [{path: 'employee/firstName'}, {path: 'employee/lastName'}], formatter: '.formatFullName'}" />
+              <Text text="{date}" />
+              <Text text="{parts: [{path: 'costCenter/name'}, {path: 'project/name'}], formatter: '.formatCostCenterOrProject'}" />
+              <Text text="{activityType}" />
+              <Text text="{hours}" />
+              <HBox>
+                <Button text="{i18n>approve}" type="Accept" press="onApprove" class="sapUiTinyMarginEnd" />
+                <Button text="{i18n>reject}" type="Reject" press="onReject" />
+              </HBox>
+            </cells>
+          </ColumnListItem>
+        </items>
+      </Table>
+  </VBox>
+</mvc:View>

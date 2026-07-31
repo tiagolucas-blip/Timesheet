@@ -1,0 +1,13 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog id="payloadDialog" title="{i18n>colPayload}" contentWidth="34rem">
+    <content>
+      <VBox class="sapUiSmallMargin">
+        <ObjectStatus text="{payload>/message}" state="{payload>/state}" class="sapUiSmallMarginBottom" />
+        <TextArea id="payloadTextArea" value="{payload>/payload}" editable="false" rows="16" width="100%" />
+      </VBox>
+    </content>
+    <buttons>
+      <Button text="{i18n>close}" press=".onClosePayload" />
+    </buttons>
+  </Dialog>
+</core:FragmentDefinition>

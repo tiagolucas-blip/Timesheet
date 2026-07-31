@@ -1,0 +1,72 @@
+<mvc:View
+  controllerName="timesheet.app.controller.CatsTransfer"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:core="sap.ui.core"
+  xmlns="sap.m"
+>
+  <VBox class="sapUiResponsiveContentPadding">
+      <Toolbar>
+        <Title text="{i18n>tabCatsTransfer}" level="H2" />
+      </Toolbar>
+
+      <Table
+        id="approvedHeadersTable"
+        noDataText="No approved weeks awaiting transfer"
+        items="{
+          path: '/TimesheetHeaders',
+          parameters: { $expand: 'employee' },
+          sorter: { path: 'weekStartDate', descending: true }
+        }"
+      >
+        <columns>
+          <Column><Text text="{i18n>colEmployee}" /></Column>
+          <Column><Text text="{i18n>colWeek}" /></Column>
+          <Column hAlign="End"><Text text="{i18n>colTotalHours}" /></Column>
+          <Column />
+        </columns>
+        <items>
+          <ColumnListItem>
+            <cells>
+              <Text text="{parts: [{path: 'employee/firstName'}, {path: 'employee/lastName'}], formatter: '.formatFullName'}" />
+              <Text text="{weekStartDate}" />
+              <Text text="{totalHours}" />
+              <Button text="{i18n>transferToSap}" type="Emphasized" press="onTransfer" />
+            </cells>
+          </ColumnListItem>
+        </items>
+      </Table>
+
+      <Toolbar class="sapUiLargeMarginTop">
+        <Title text="Transfer log" level="H3" />
+      </Toolbar>
+
+      <Table
+        id="logsTable"
+        noDataText="No transfers yet"
+        items="{
+          path: '/CatsTransferLogs',
+          parameters: { $expand: 'header($expand=employee),triggeredBy' },
+          sorter: { path: 'triggeredAt', descending: true }
+        }"
+      >
+        <columns>
+          <Column><Text text="{i18n>colDate}" /></Column>
+          <Column><Text text="{i18n>colEmployee}" /></Column>
+          <Column><Text text="{i18n>colStatus}" /></Column>
+          <Column><Text text="{i18n>colApprover}" /></Column>
+          <Column />
+        </columns>
+        <items>
+          <ColumnListItem>
+            <cells>
+              <Text text="{triggeredAt}" />
+              <Text text="{parts: [{path: 'header/employee/firstName'}, {path: 'header/employee/lastName'}], formatter: '.formatFullName'}" />
+              <ObjectStatus text="{status}" state="{path: 'status', formatter: '.formatLogState'}" />
+              <Text text="{parts: [{path: 'triggeredBy/firstName'}, {path: 'triggeredBy/lastName'}], formatter: '.formatFullName'}" />
+              <Button text="{i18n>colPayload}" type="Transparent" press="onViewPayload" />
+            </cells>
+          </ColumnListItem>
+        </items>
+      </Table>
+  </VBox>
+</mvc:View>

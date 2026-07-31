@@ -15,5 +15,8 @@ mta_archives/
 # Other
 .DS_Store
 
+# Built UI5 framework resources (see `npm run build:ui5`) — large, regenerated on demand
+dist-ui5/
+
 # @cap-js/cds-typer
 @cds-models

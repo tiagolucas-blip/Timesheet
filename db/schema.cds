@@ -1,6 +1,17 @@
-using { cuid, managed } from '@sap/cds/common';
+using { managed } from '@sap/cds/common';
 
 namespace timesheet;
+
+/**
+ * String-typed key instead of the standard `cuid` (UUID) aspect: this mockup's
+ * seed data uses human-readable IDs (EMP-001, CC-1000-IT, ...) so they read
+ * clearly in CSVs, service calls and this file. A UUID key would type the
+ * OData property as Edm.Guid, which the client formats as an unquoted filter
+ * literal — breaking on non-GUID string values like these.
+ */
+aspect StringKey {
+  key ID : String(36);
+}
 
 /**
  * Master data entities below mirror what is replicated from SAP S/4HANA
@@ -11,7 +22,7 @@ namespace timesheet;
  * change, not a model change.
  */
 
-entity Employees : cuid {
+entity Employees : StringKey {
   employeeId   : String(8)   @title: 'Employee ID (PERNR)'; // e.g. 00000007
   firstName    : String(80);
   lastName     : String(80);
@@ -22,14 +33,14 @@ entity Employees : cuid {
   timesheets   : Association to many TimesheetHeaders on timesheets.employee = $self;
 }
 
-entity CostCenters : cuid {
+entity CostCenters : StringKey {
   costCenterId : String(10)  @title: 'Cost Center (SAP CO)'; // e.g. CC_MA_RE
   name         : String(120);
   companyCode  : String(4);
   responsibleManager : Association to Employees;
 }
 
-entity Projects : cuid {
+entity Projects : StringKey {
   projectId    : String(24)  @title: 'Project / WBS Element';
   name         : String(120);
   costCenter   : Association to CostCenters;
@@ -43,7 +54,7 @@ entity Projects : cuid {
  * Which cost centers / projects an employee is allowed to book time against.
  * Mirrors an S/4 authorization/assignment check without modeling full CATS auth.
  */
-entity TimeAllocations : cuid {
+entity TimeAllocations : StringKey {
   employee   : Association to Employees;
   costCenter : Association to CostCenters;
   project    : Association to Projects;
@@ -70,7 +81,7 @@ type EntryStatus : String enum {
  * entries (see srv logic) — it is persisted for fast list filtering in the
  * approval and transfer worklists rather than recomputed on every read.
  */
-entity TimesheetHeaders : cuid, managed {
+entity TimesheetHeaders : StringKey, managed {
   employee      : Association to Employees;
   weekStartDate : Date; // Monday of the ISO week
   status        : WeekStatus default 'Draft';
@@ -84,7 +95,7 @@ entity TimesheetHeaders : cuid, managed {
  * this granularity because a week can span cost centers or projects with
  * different responsible managers.
  */
-entity TimesheetEntries : cuid, managed {
+entity TimesheetEntries : StringKey, managed {
   header       : Association to TimesheetHeaders;
   employee     : Association to Employees;
   date         : Date;
@@ -106,7 +117,7 @@ entity TimesheetEntries : cuid, managed {
  * real OData/IDoc call to S/4 — stores the outbound payload we *would* send
  * so the approval-to-posting flow is demonstrable end-to-end.
  */
-entity CatsTransferLogs : cuid {
+entity CatsTransferLogs : StringKey {
   header       : Association to TimesheetHeaders;
   triggeredAt  : Timestamp;
   triggeredBy  : Association to Employees;

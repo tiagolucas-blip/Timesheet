@@ -25,7 +25,7 @@ service TimesheetService {
     // Manager action: approve a single booking line.
     action approve() returns TimesheetEntries;
     // Manager action: reject a single booking line with a reason.
-    action reject(reason: String) returns TimesheetEntries;
+    action rejectEntry(reason: String) returns TimesheetEntries;
   };
 
   @readonly entity CatsTransferLogs as projection on db.CatsTransferLogs;

@@ -1,0 +1,32 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog id="addEntryDialog" title="{i18n>addEntry}" contentWidth="26rem">
+    <content>
+      <VBox class="sapUiSmallMargin">
+        <Label text="{i18n>colDate}" labelFor="entryDatePicker" />
+        <DatePicker id="entryDatePicker" valueFormat="yyyy-MM-dd" displayFormat="medium" width="100%" />
+
+        <Label text="{i18n>colCostCenterOrProject}" labelFor="allocationSelect" class="sapUiSmallMarginTop" />
+        <Select id="allocationSelect" items="{add>/allocations}" width="100%">
+          <core:Item key="{add>key}" text="{add>label}" />
+        </Select>
+
+        <Label text="{i18n>colActivity}" labelFor="activitySelect" class="sapUiSmallMarginTop" />
+        <Select id="activitySelect" width="100%">
+          <core:Item key="Attendance" text="Attendance" />
+          <core:Item key="Overtime" text="Overtime" />
+          <core:Item key="Travel" text="Travel" />
+        </Select>
+
+        <Label text="{i18n>colHours}" labelFor="hoursInput" class="sapUiSmallMarginTop" />
+        <Input id="hoursInput" type="Number" value="8" width="100%" />
+
+        <Label text="{i18n>colComment}" labelFor="commentInput" class="sapUiSmallMarginTop" />
+        <TextArea id="commentInput" rows="2" width="100%" />
+      </VBox>
+    </content>
+    <buttons>
+      <Button text="{i18n>save}" type="Emphasized" press=".onSaveEntry" />
+      <Button text="{i18n>cancel}" press=".onCancelAddEntry" />
+    </buttons>
+  </Dialog>
+</core:FragmentDefinition>
