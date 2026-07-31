@@ -1,0 +1,27 @@
+{
+  "xsappname": "timesheet",
+  "description": "Timesheet role scaffold. Not yet enforced by the CAP service — this mockup phase uses an X-Employee-Id header for the acting user (see srv/timesheet-service.js). Wiring these scopes into the service with @requires annotations is a follow-up before going live.",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Employee",
+      "description": "Register own hours, submit weeks for approval"
+    },
+    {
+      "name": "$XSAPPNAME.Manager",
+      "description": "Approve/reject timesheet entries, transfer approved weeks to SAP CATS"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "TimesheetEmployee",
+      "description": "Employee: own timesheet only",
+      "scope-references": ["$XSAPPNAME.Employee"]
+    },
+    {
+      "name": "TimesheetManager",
+      "description": "Manager: approvals + CATS transfer for their cost centers/projects",
+      "scope-references": ["$XSAPPNAME.Employee", "$XSAPPNAME.Manager"]
+    }
+  ]
+}

@@ -17,6 +17,7 @@ mta_archives/
 
 # Built UI5 framework resources (see `npm run build:ui5`) — large, regenerated on demand
 dist-ui5/
+app/timesheet/dist/
 
 # @cap-js/cds-typer
 @cds-models

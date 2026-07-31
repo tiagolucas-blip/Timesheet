@@ -2,7 +2,9 @@
   "name": "timesheet",
   "version": "1.0.0",
   "dependencies": {
-    "@sap/cds": "^10"
+    "@cap-js/hana": "^3",
+    "@sap/cds": "^10",
+    "@sap/xssec": "^4"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^3",
@@ -11,11 +13,20 @@
     "@openui5/sap.ui.core": "1.120",
     "@openui5/sap.ui.layout": "1.120",
     "@openui5/themelib_sap_horizon": "1.120",
+    "@sap/cds-dk": "^10",
     "@ui5/cli": "^4.0.60"
   },
   "scripts": {
     "start": "cds-serve",
     "build:ui5": "cd app/timesheet && ui5 build --all --dest ../../dist-ui5"
   },
-  "private": true
+  "private": true,
+  "cds": {
+    "requires": {
+      "[production]": {
+        "auth": "xsuaa"
+      },
+      "html5-repo": true
+    }
+  }
 }
