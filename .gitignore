@@ -19,5 +19,8 @@ mta_archives/
 dist-ui5/
 app/timesheet/dist/
 
+# Vercel serverless bundle artifacts (see `npm run build:bundle`)
+_gen/
+
 # @cap-js/cds-typer
 @cds-models

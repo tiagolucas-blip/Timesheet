@@ -1,10 +1,5 @@
 {
-  "buildCommand": "npm install && npm run deploy:vercel-db",
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "{app/timesheet/webapp/**,db/**,srv/**}"
-    }
-  },
+  "buildCommand": "npm install && npm run build:bundle && npm run deploy:vercel-db",
   "redirects": [
     { "source": "/", "destination": "/timesheet/webapp/index.html", "permanent": false }
   ],
