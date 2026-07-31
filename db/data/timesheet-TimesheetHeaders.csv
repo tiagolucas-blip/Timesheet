@@ -1,0 +1,4 @@
+ID,employee_ID,weekStartDate,status,submittedAt,totalHours
+TSH-001,EMP-003,2026-07-27,Submitted,2026-07-27T18:00:00Z,16.00
+TSH-002,EMP-004,2026-07-20,Approved,2026-07-20T17:30:00Z,16.00
+TSH-003,EMP-005,2026-07-13,Transferred,2026-07-13T17:00:00Z,8.00

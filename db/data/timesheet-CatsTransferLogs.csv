@@ -1,0 +1,2 @@
+ID,header_ID,triggeredAt,triggeredBy_ID,status,message,payload
+CTL-001,TSH-003,2026-07-18T08:00:00Z,EMP-002,Success,Transferred 1 record(s) to CATS (CAT2),"[{""pernr"":""00000005"",""costCenter"":""CC_1000_FIN"",""project"":null,""date"":""2026-07-13"",""hours"":8.00,""awart"":""1000""}]"

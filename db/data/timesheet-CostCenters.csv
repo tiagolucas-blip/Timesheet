@@ -1,0 +1,4 @@
+ID,costCenterId,name,companyCode,responsibleManager_ID
+CC-1000-IT,CC_1000_IT,IT Services,1000,EMP-001
+CC-1000-FIN,CC_1000_FIN,Finance,1000,EMP-002
+CC-1000-OPS,CC_1000_OPS,Operations,1000,EMP-001

@@ -1,0 +1,6 @@
+ID,header_ID,employee_ID,date,costCenter_ID,project_ID,activityType,hours,comment,status,approver_ID,approvedAt,rejectionReason,transferredAt,catsTransfer_ID
+TSE-001,TSH-001,EMP-003,2026-07-27,CC-1000-IT,,Attendance,8.00,,Submitted,,,,,
+TSE-002,TSH-001,EMP-003,2026-07-28,,PRJ-2026-001,Attendance,8.00,,Submitted,,,,,
+TSE-003,TSH-002,EMP-004,2026-07-20,CC-1000-OPS,,Attendance,8.00,,Approved,EMP-001,2026-07-24T09:00:00Z,,,
+TSE-004,TSH-002,EMP-004,2026-07-21,,PRJ-2026-001,Attendance,8.00,,Approved,EMP-001,2026-07-24T09:00:00Z,,,
+TSE-005,TSH-003,EMP-005,2026-07-13,CC-1000-FIN,,Attendance,8.00,,Approved,EMP-002,2026-07-17T10:00:00Z,,2026-07-18T08:00:00Z,CTL-001

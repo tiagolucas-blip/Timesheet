@@ -1,0 +1,6 @@
+ID,employeeId,firstName,lastName,email,homeCostCenter_ID,isManager,active
+EMP-001,00000001,Ana,Ferreira,ana.ferreira@example.com,CC-1000-IT,true,true
+EMP-002,00000002,Bruno,Santos,bruno.santos@example.com,CC-1000-FIN,true,true
+EMP-003,00000003,Carla,Oliveira,carla.oliveira@example.com,CC-1000-IT,false,true
+EMP-004,00000004,Diogo,Pereira,diogo.pereira@example.com,CC-1000-OPS,false,true
+EMP-005,00000005,Eva,Costa,eva.costa@example.com,CC-1000-FIN,false,true

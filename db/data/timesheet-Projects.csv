@@ -1,0 +1,3 @@
+ID,projectId,name,costCenter_ID,responsibleManager_ID,validFrom,validTo,active
+PRJ-2026-001,WBS-2026-DGTX-01,Digital Transformation Rollout,CC-1000-IT,EMP-001,2026-01-01,2026-12-31,true
+PRJ-2026-002,WBS-2026-FINA-01,Finance Process Automation,CC-1000-FIN,EMP-002,2026-01-01,2026-12-31,true
