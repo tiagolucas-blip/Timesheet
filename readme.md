@@ -13,7 +13,9 @@ File or Folder | Purpose
 `db/data/` | Mock master and transactional data (CSV)
 `srv/` | OData service + workflow logic (submit / approve / reject / transfer to CATS)
 `app/timesheet/` | Freestyle SAPUI5 app (My Timesheet, Approvals, SAP Transfer)
-`server.js` | Serves the OpenUI5 framework locally from `dist-ui5/` instead of a public CDN
+`server.js` | Local dev only: serves the OpenUI5 framework from `dist-ui5/` instead of a public CDN
+`mta.yaml`, `app/router/`, `xs-security.json` | SAP BTP Cloud Foundry deployment (HANA + XSUAA)
+`api/index.js`, `vercel.json` | Vercel deployment (Postgres + serverless function)
 
 ## Getting started
 
@@ -32,6 +34,33 @@ directly from `app/timesheet/webapp/` by `cds watch`.
 
 There is no real authentication in this mockup — use the "Acting as" selector
 in the top-right corner to switch between employees/managers.
+
+## Deploying to Vercel
+
+Vercel runs stateless serverless functions with no persistent local disk, so
+this deployment target swaps SQLite for a real Postgres database and wraps
+the CAP app as a single serverless function (`api/index.js`) instead of a
+long-running server. The UI5 framework is loaded from the public SAPUI5 CDN
+via a `vercel.json` rewrite rather than bundled into the function.
+
+1. In the Vercel project → **Storage**, add a Postgres integration (Neon,
+   Supabase, or Vercel Postgres all work) and confirm it sets a
+   `DATABASE_URL` (or `POSTGRES_URL`) environment variable, available at
+   **both build and runtime**.
+2. Deploy (push to `main`, or `vercel --prod`). The build command
+   (`npm run deploy:vercel-db`, see `vercel.json`) runs `cds deploy` against
+   that database, creating the schema and (re-)seeding the mock data on
+   every deploy.
+3. Visit the deployment URL — it redirects to
+   `/timesheet/webapp/index.html`.
+
+This path was verified locally end-to-end (schema deploy, full submit →
+approve/reject → CATS-transfer workflow, and a simulated serverless
+invocation with no listening server) against a real local Postgres instance
+before ever touching Vercel — see commit history for details. Deploying
+here is still a mockup: like the BTP path, there's no real S/4 connection
+and auth stays on the `X-Employee-Id` header, now under CAP's `mocked`
+auth strategy for the `vercel` profile (see `package.json`'s `cds.requires`).
 
 ## Learn more
 

@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npm install && npm run deploy:vercel-db",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "app/timesheet/webapp/**"
+    }
+  },
+  "redirects": [
+    { "source": "/", "destination": "/timesheet/webapp/index.html", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/resources/:path*", "destination": "https://ui5.sap.com/resources/:path*" },
+    { "source": "/test-resources/:path*", "destination": "https://ui5.sap.com/test-resources/:path*" },
+    { "source": "/(.*)", "destination": "/api/index" }
+  ]
+}

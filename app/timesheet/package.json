@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "ui5 build --dest dist"
+    "build": "ui5 build --dest dist",
+    "start": "ui5 serve"
   },
   "devDependencies": {
-    "@ui5/cli": "^4"
-  }
+    "@ui5/cli": "^4",
+    "ui5-task-zipper": "^3"
+  },
+  "main": "webapp/index.html"
 }

@@ -16,12 +16,17 @@
     {
       "name": "TimesheetEmployee",
       "description": "Employee: own timesheet only",
-      "scope-references": ["$XSAPPNAME.Employee"]
+      "scope-references": [
+        "$XSAPPNAME.Employee"
+      ]
     },
     {
       "name": "TimesheetManager",
       "description": "Manager: approvals + CATS transfer for their cost centers/projects",
-      "scope-references": ["$XSAPPNAME.Employee", "$XSAPPNAME.Manager"]
+      "scope-references": [
+        "$XSAPPNAME.Employee",
+        "$XSAPPNAME.Manager"
+      ]
     }
   ]
 }

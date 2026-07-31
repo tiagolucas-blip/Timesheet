@@ -11,3 +11,19 @@ framework:
     - name: sap.f
     - name: sap.ui.layout
     - name: themelib_sap_horizon
+resources:
+  configuration:
+    propertiesFileSourceEncoding: UTF-8
+builder:
+  resources:
+    excludes:
+      - "/test/**"
+      - "/localService/**"
+  customTasks:
+    - name: ui5-task-zipper
+      afterTask: generateVersionInfo
+      configuration:
+        archiveName: timesheet
+        relativePaths: true
+        additionalFiles:
+          - xs-app.json
