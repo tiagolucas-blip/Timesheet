@@ -1,5 +1,3 @@
-using { managed } from '@sap/cds/common';
-
 namespace timesheet;
 
 /**
@@ -11,6 +9,20 @@ namespace timesheet;
  */
 aspect StringKey {
   key ID : String(36);
+}
+
+/**
+ * Inlined equivalent of @sap/cds/common's `managed` aspect (createdAt/By,
+ * modifiedAt/By) instead of importing it. The Vercel serverless bundle
+ * compiles this model from a bare copy of db/ + srv/ written to /tmp at
+ * cold start (see api/index.js) — no node_modules alongside it there, so
+ * `using ... from '@sap/cds/common'` can't be resolved.
+ */
+aspect managed {
+  createdAt  : Timestamp @cds.on.insert: $now;
+  createdBy  : String(255) @cds.on.insert: $user;
+  modifiedAt : Timestamp @cds.on.insert: $now @cds.on.update: $now;
+  modifiedBy : String(255) @cds.on.insert: $user @cds.on.update: $user;
 }
 
 /**
