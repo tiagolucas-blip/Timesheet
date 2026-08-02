@@ -1,5 +1,10 @@
 {
   "buildCommand": "npm install && npm run build:bundle && npm run deploy:vercel-db",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "node_modules/@sap/cds-compiler/**"
+    }
+  },
   "redirects": [
     { "source": "/", "destination": "/timesheet/webapp/index.html", "permanent": false }
   ],
