@@ -2,7 +2,7 @@
   "buildCommand": "npm install && npm run build:bundle && npm run deploy:vercel-db",
   "functions": {
     "api/index.js": {
-      "includeFiles": "node_modules/@sap/cds-compiler/**"
+      "includeFiles": "node_modules/{@sap/cds,@sap/cds-compiler,@sap/xssec,@cap-js/postgres,@cap-js/db-service,pg,pg-cloudflare,pg-connection-string,pg-int8,pg-pool,pg-protocol,pg-types,pgpass,express}/**"
     }
   },
   "redirects": [
