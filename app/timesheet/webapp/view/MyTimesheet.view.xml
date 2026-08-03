@@ -2,6 +2,7 @@
   controllerName="timesheet.app.controller.MyTimesheet"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns:core="sap.ui.core"
+  xmlns:cust="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
   xmlns="sap.m"
 >
   <VBox class="sapUiResponsiveContentPadding">
@@ -43,55 +44,101 @@
         </items>
       </Table>
 
-      <Panel headerText="{i18n>colDate}" visible="{view>/hasSelection}" class="sapUiResponsiveMargin">
-        <headerToolbar>
-          <Toolbar>
-            <Title text="Entries" level="H3" />
-            <ToolbarSpacer />
-            <Button
-              text="{i18n>addEntry}"
-              press="onAddEntry"
-              enabled="{path: 'view>/selectedHeaderStatus', formatter: '.isDraft', targetType: 'any'}"
-            />
-          </Toolbar>
-        </headerToolbar>
+      <Panel
+        headerText="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatWeekTitle'}"
+        visible="{view>/hasSelection}"
+        class="sapUiResponsiveMargin"
+      >
         <Table
-          id="entriesTable"
-          noDataText="No entries in this week yet"
-          items="{
-            path: '/TimesheetEntries',
-            parameters: { $expand: 'costCenter,project' },
-            sorter: { path: 'date' }
-          }"
+          id="gridTable"
+          class="sapUiSizeCompact"
+          noDataText="{i18n>msgNoAllocation}"
+          items="{grid>/rows}"
         >
           <columns>
-            <Column><Text text="{i18n>colDate}" /></Column>
-            <Column><Text text="{i18n>colCostCenterOrProject}" /></Column>
-            <Column><Text text="{i18n>colActivity}" /></Column>
-            <Column hAlign="End"><Text text="{i18n>colHours}" /></Column>
-            <Column><Text text="{i18n>colStatus}" /></Column>
-            <Column><Text text="{i18n>colRejectionReason}" /></Column>
-            <Column />
+            <Column><Text text="{i18n>colProject}" /></Column>
+            <Column><Text text="{i18n>colCostCenter}" /></Column>
+            <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader0'}" /></Column>
+            <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader1'}" /></Column>
+            <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader2'}" /></Column>
+            <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader3'}" /></Column>
+            <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader4'}" /></Column>
+            <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader5'}" /></Column>
+            <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader6'}" /></Column>
+            <Column hAlign="End"><Text text="{i18n>colTotal}" /></Column>
           </columns>
           <items>
             <ColumnListItem>
               <cells>
-                <Text text="{date}" />
-                <Text text="{parts: [{path: 'costCenter/name'}, {path: 'project/name'}], formatter: '.formatCostCenterOrProject'}" />
-                <Text text="{activityType}" />
-                <Text text="{hours}" />
-                <ObjectStatus text="{status}" state="{path: 'status', formatter: '.formatStatusState'}" />
-                <Text text="{rejectionReason}" />
-                <Button
-                  icon="sap-icon://delete"
-                  type="Transparent"
-                  visible="{path: 'status', formatter: '.isDraft', targetType: 'any'}"
-                  press="onDeleteEntry"
+                <Text text="{grid>projectLabel}" />
+                <Text text="{grid>costCenterLabel}" />
+                <Input
+                  type="Number" textAlign="Center" width="4rem"
+                  value="{grid>cells/0/hours}"
+                  editable="{grid>editable}"
+                  valueState="{path: 'grid>cells/0/status', formatter: '.formatStatusState'}"
+                  valueStateText="{grid>cells/0/rejectionReason}"
+                  change="onCellHoursChange" cust:day="0"
                 />
+                <Input
+                  type="Number" textAlign="Center" width="4rem"
+                  value="{grid>cells/1/hours}"
+                  editable="{grid>editable}"
+                  valueState="{path: 'grid>cells/1/status', formatter: '.formatStatusState'}"
+                  valueStateText="{grid>cells/1/rejectionReason}"
+                  change="onCellHoursChange" cust:day="1"
+                />
+                <Input
+                  type="Number" textAlign="Center" width="4rem"
+                  value="{grid>cells/2/hours}"
+                  editable="{grid>editable}"
+                  valueState="{path: 'grid>cells/2/status', formatter: '.formatStatusState'}"
+                  valueStateText="{grid>cells/2/rejectionReason}"
+                  change="onCellHoursChange" cust:day="2"
+                />
+                <Input
+                  type="Number" textAlign="Center" width="4rem"
+                  value="{grid>cells/3/hours}"
+                  editable="{grid>editable}"
+                  valueState="{path: 'grid>cells/3/status', formatter: '.formatStatusState'}"
+                  valueStateText="{grid>cells/3/rejectionReason}"
+                  change="onCellHoursChange" cust:day="3"
+                />
+                <Input
+                  type="Number" textAlign="Center" width="4rem"
+                  value="{grid>cells/4/hours}"
+                  editable="{grid>editable}"
+                  valueState="{path: 'grid>cells/4/status', formatter: '.formatStatusState'}"
+                  valueStateText="{grid>cells/4/rejectionReason}"
+                  change="onCellHoursChange" cust:day="4"
+                />
+                <Input
+                  type="Number" textAlign="Center" width="4rem"
+                  value="{grid>cells/5/hours}"
+                  editable="{grid>editable}"
+                  valueState="{path: 'grid>cells/5/status', formatter: '.formatStatusState'}"
+                  valueStateText="{grid>cells/5/rejectionReason}"
+                  change="onCellHoursChange" cust:day="5"
+                />
+                <Input
+                  type="Number" textAlign="Center" width="4rem"
+                  value="{grid>cells/6/hours}"
+                  editable="{grid>editable}"
+                  valueState="{path: 'grid>cells/6/status', formatter: '.formatStatusState'}"
+                  valueStateText="{grid>cells/6/rejectionReason}"
+                  change="onCellHoursChange" cust:day="6"
+                />
+                <Text text="{grid>rowTotal}" />
               </cells>
             </ColumnListItem>
           </items>
         </Table>
+
+        <Toolbar class="sapUiTinyMarginTop">
+          <ToolbarSpacer />
+          <Text text="{i18n>colGrandTotal}" class="sapUiSmallMarginEnd" />
+          <Text text="{grid>/grandTotal}" class="sapUiSmallMarginEnd" />
+        </Toolbar>
       </Panel>
   </VBox>
 </mvc:View>
