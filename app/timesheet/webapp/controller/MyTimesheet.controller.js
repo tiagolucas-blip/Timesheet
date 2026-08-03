@@ -128,6 +128,7 @@ sap.ui.define(
         if (!this._aAllocations) await this._loadAllocations();
         this._aWeekDates = this._weekDates(oHeader.weekStartDate);
         this._sSelectedHeaderId = oHeader.ID;
+        this._aPendingRows = []; // rows the employee added via "+ Add Line" but hasn't booked hours to yet
 
         // Kept as an instance field rather than bound to any control: it is used
         // purely as a CRUD handle (create/setProperty/delete on its contexts), the
@@ -142,48 +143,124 @@ sap.ui.define(
         this._rebuildGridModel(oHeader.status === "Draft");
       },
 
+      _allocationOptions: function () {
+        // A leading blank option so a freshly added row's Select doesn't silently
+        // fall back to auto-selecting the first real allocation (sap.m.Select's
+        // default behavior when selectedKey matches nothing) without the employee
+        // having actually chosen it.
+        var aPlaceholder = [{ key: "", label: this.getView().getModel("i18n").getResourceBundle().getText("chooseAllocation") }];
+        return aPlaceholder.concat(
+          this._aAllocations
+            .map((o) => {
+              if (o.costCenter) return { key: "CC:" + o.costCenter.ID, label: o.costCenter.name + " (" + o.costCenter.costCenterId + ")" };
+              if (o.project) return { key: "PRJ:" + o.project.ID, label: o.project.name + " (" + o.project.projectId + ")" };
+              return null;
+            })
+            .filter(Boolean)
+        );
+      },
+
+      // Builds one grid row's cells for a given cost-center-or-project target. Used
+      // both for rows derived from existing entries and for pending (not-yet-booked)
+      // rows the employee is still choosing a target for via the Select.
+      _buildRowCells: function (oTarget, aWeekDates, aEntries, aDayTotals, bEditable) {
+        var sCostCenterID = oTarget.costCenterID,
+          sProjectID = oTarget.projectID;
+        var bHasTarget = !!(sCostCenterID || sProjectID);
+
+        var aCells = aWeekDates.map((sDate, i) => {
+          var oEntry = bHasTarget
+            ? aEntries.find((e) => e.date === sDate && (sCostCenterID ? e.costCenter_ID === sCostCenterID : e.project_ID === sProjectID))
+            : null;
+          var fHours = oEntry ? Number(oEntry.hours) : 0;
+          aDayTotals[i] += fHours;
+          return {
+            date: sDate,
+            hours: oEntry ? oEntry.hours : "",
+            entryID: oEntry ? oEntry.ID : null,
+            status: oEntry ? oEntry.status : null,
+            rejectionReason: oEntry ? oEntry.rejectionReason : null,
+          };
+        });
+
+        var fRowTotal = aCells.reduce((s, c) => s + (Number(c.hours) || 0), 0);
+        return {
+          tmpKey: oTarget.tmpKey || null,
+          pending: !!oTarget.tmpKey,
+          costCenterID: sCostCenterID,
+          projectID: sProjectID,
+          label: oTarget.label || "",
+          selectedKey: sCostCenterID ? "CC:" + sCostCenterID : sProjectID ? "PRJ:" + sProjectID : "",
+          cells: aCells,
+          rowTotal: fRowTotal.toFixed(2),
+          editable: bEditable && bHasTarget,
+        };
+      },
+
       _rebuildGridModel: function (bEditable) {
         var aWeekDates = this._aWeekDates;
         var aEntries = this._aEntryContexts.map((c) => c.getObject());
         var aDayTotals = [0, 0, 0, 0, 0, 0, 0];
 
-        var aRows = this._aAllocations.map((oAlloc) => {
-          var sCostCenterID = oAlloc.costCenter_ID || null;
-          var sProjectID = oAlloc.project_ID || null;
-
-          var aCells = aWeekDates.map((sDate, i) => {
-            var oEntry = aEntries.find(
-              (e) => e.date === sDate && (sCostCenterID ? e.costCenter_ID === sCostCenterID : e.project_ID === sProjectID)
-            );
-            var fHours = oEntry ? Number(oEntry.hours) : 0;
-            aDayTotals[i] += fHours;
-            return {
-              date: sDate,
-              hours: oEntry ? oEntry.hours : "",
-              entryID: oEntry ? oEntry.ID : null,
-              status: oEntry ? oEntry.status : null,
-              rejectionReason: oEntry ? oEntry.rejectionReason : null,
-            };
+        // One row per cost-center-or-project combo actually booked this week...
+        var aUsedTargets = [];
+        aEntries.forEach((e) => {
+          var sKey = e.costCenter_ID ? "CC:" + e.costCenter_ID : "PRJ:" + e.project_ID;
+          if (aUsedTargets.some((t) => t.selectedKey === sKey)) return;
+          aUsedTargets.push({
+            selectedKey: sKey,
+            costCenterID: e.costCenter_ID || null,
+            projectID: e.project_ID || null,
+            label: e.costCenter ? e.costCenter.name : e.project ? e.project.name : "",
           });
-
-          var fRowTotal = aCells.reduce((s, c) => s + (Number(c.hours) || 0), 0);
-          return {
-            costCenterID: sCostCenterID,
-            costCenterLabel: oAlloc.costCenter ? oAlloc.costCenter.name : "",
-            projectID: sProjectID,
-            projectLabel: oAlloc.project ? oAlloc.project.name : "",
-            cells: aCells,
-            rowTotal: fRowTotal.toFixed(2),
-            editable: bEditable,
-          };
         });
+        var aRows = aUsedTargets.map((t) => this._buildRowCells(t, aWeekDates, aEntries, aDayTotals, bEditable));
+
+        // ...plus rows the employee is still filling in (only while the week is editable).
+        if (bEditable) {
+          aRows = aRows.concat(this._aPendingRows.map((t) => this._buildRowCells(t, aWeekDates, aEntries, aDayTotals, bEditable)));
+        } else {
+          this._aPendingRows = [];
+        }
 
         var fGrandTotal = aDayTotals.reduce((s, v) => s + v, 0);
         this.getView().getModel("grid").setData({
           rows: aRows,
+          allocationOptions: this._allocationOptions(),
           dayTotals: aDayTotals.map((v) => v.toFixed(2)),
           grandTotal: fGrandTotal.toFixed(2),
         });
+      },
+
+      onAddRow: function () {
+        this._aPendingRows.push({
+          tmpKey: "tmp-" + Date.now() + "-" + Math.random().toString(36).slice(2),
+          costCenterID: null,
+          projectID: null,
+          label: "",
+        });
+        this._rebuildGridModel(true);
+      },
+
+      onRemoveRow: function (oEvent) {
+        var oRow = oEvent.getSource().getBindingContext("grid").getObject();
+        this._aPendingRows = this._aPendingRows.filter((t) => t.tmpKey !== oRow.tmpKey);
+        this._rebuildGridModel(true);
+      },
+
+      onRowAllocationChange: function (oEvent) {
+        var oRow = oEvent.getSource().getBindingContext("grid").getObject();
+        var oPending = this._aPendingRows.find((t) => t.tmpKey === oRow.tmpKey);
+        if (!oPending) return;
+
+        var sKey = oEvent.getParameter("selectedItem") ? oEvent.getParameter("selectedItem").getKey() : "";
+        var oAlloc = this._aAllocations.find(
+          (a) => (a.costCenter && "CC:" + a.costCenter.ID === sKey) || (a.project && "PRJ:" + a.project.ID === sKey)
+        );
+        oPending.costCenterID = oAlloc && oAlloc.costCenter ? oAlloc.costCenter.ID : null;
+        oPending.projectID = oAlloc && oAlloc.project ? oAlloc.project.ID : null;
+        oPending.label = oAlloc ? (oAlloc.costCenter ? oAlloc.costCenter.name : oAlloc.project.name) : "";
+        this._rebuildGridModel(true);
       },
 
       onCellHoursChange: async function (oEvent) {
@@ -196,7 +273,12 @@ sap.ui.define(
         var fVal = sVal === "" ? 0 : parseFloat(sVal);
         if (isNaN(fVal) || fVal < 0) {
           MessageToast.show("Enter a valid number of hours");
-          this._rebuildGridModel(oRow.editable);
+          this._rebuildGridModel(true);
+          return;
+        }
+        if (!oRow.costCenterID && !oRow.projectID) {
+          MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("msgChooseAllocationFirst"));
+          this._rebuildGridModel(true);
           return;
         }
 
@@ -216,13 +298,15 @@ sap.ui.define(
             if (oRow.costCenterID) mPayload.costCenter_ID = oRow.costCenterID;
             else mPayload.project_ID = oRow.projectID;
             await this._oEntriesBinding.create(mPayload).created();
+            // The row now shows up naturally as a "used" row derived from entries.
+            if (oRow.pending) this._aPendingRows = this._aPendingRows.filter((t) => t.tmpKey !== oRow.tmpKey);
           }
           this._aEntryContexts = await this._oEntriesBinding.requestContexts(0, 500);
-          this._rebuildGridModel(oRow.editable);
+          this._rebuildGridModel(true);
         } catch (oErr) {
           MessageBox.error(oErr.message || "Could not save entry");
           this._aEntryContexts = await this._oEntriesBinding.requestContexts(0, 500);
-          this._rebuildGridModel(oRow.editable);
+          this._rebuildGridModel(true);
         }
       },
 

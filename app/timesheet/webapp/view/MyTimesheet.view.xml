@@ -45,10 +45,20 @@
       </Table>
 
       <Panel
-        headerText="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatWeekTitle'}"
         visible="{view>/hasSelection}"
         class="sapUiResponsiveMargin"
       >
+        <headerToolbar>
+          <Toolbar>
+            <Title text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatWeekTitle'}" level="H3" />
+            <ToolbarSpacer />
+            <Button
+              text="{i18n>addLine}"
+              press="onAddRow"
+              enabled="{path: 'view>/selectedHeaderStatus', formatter: '.isDraft', targetType: 'any'}"
+            />
+          </Toolbar>
+        </headerToolbar>
         <Table
           id="gridTable"
           class="sapUiSizeCompact"
@@ -56,8 +66,7 @@
           items="{grid>/rows}"
         >
           <columns>
-            <Column><Text text="{i18n>colProject}" /></Column>
-            <Column><Text text="{i18n>colCostCenter}" /></Column>
+            <Column><Text text="{i18n>colCostCenterOrProject}" /></Column>
             <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader0'}" /></Column>
             <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader1'}" /></Column>
             <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader2'}" /></Column>
@@ -66,12 +75,22 @@
             <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader5'}" /></Column>
             <Column hAlign="Center"><Text text="{path: 'view>/selectedHeaderWeekStart', formatter: '.formatDayHeader6'}" /></Column>
             <Column hAlign="End"><Text text="{i18n>colTotal}" /></Column>
+            <Column />
           </columns>
           <items>
             <ColumnListItem>
               <cells>
-                <Text text="{grid>projectLabel}" />
-                <Text text="{grid>costCenterLabel}" />
+                <HBox>
+                  <Select
+                    visible="{grid>pending}" width="14rem"
+                    selectedKey="{grid>selectedKey}"
+                    change="onRowAllocationChange"
+                    items="{path: 'grid>/allocationOptions', templateShareable: true}"
+                  >
+                    <core:Item key="{grid>key}" text="{grid>label}" />
+                  </Select>
+                  <Text visible="{= !${grid>pending} }" text="{grid>label}" />
+                </HBox>
                 <Input
                   type="Number" textAlign="Center" width="4rem"
                   value="{grid>cells/0/hours}"
@@ -129,6 +148,13 @@
                   change="onCellHoursChange" cust:day="6"
                 />
                 <Text text="{grid>rowTotal}" />
+                <Button
+                  icon="sap-icon://decline"
+                  type="Transparent"
+                  tooltip="{i18n>removeLine}"
+                  visible="{grid>pending}"
+                  press="onRemoveRow"
+                />
               </cells>
             </ColumnListItem>
           </items>
